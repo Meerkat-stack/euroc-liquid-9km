@@ -101,8 +101,50 @@ def create_rocket(liquid_motor):
     tail = rocket.add_tail(top_radius=TAIL_TOP_RADIUS,bottom_radius=TAIL_BOTTOM_RADIUS,length=TAIL_LENGHT,position=TAIL_POSTITION)
     # położenie silnika w rakiecie
     rocket.add_motor(motor=liquid_motor,position=MOTOR_POSITION)
+    # prowadnice
+    rail_buttons = rocket.set_rail_buttons(upper_button_position=UPPER_BUTTON_POSITION,lower_button_position=LOWER_BUTTON_POSITION,angular_position=45)
 
     return rocket
+
+
+# funkcja wyzwalająca spadochron główny
+def main_trigger(p, h, y):
+    return True if y[5] < 0 and h < 440 else False
+
+# funkcja dodająca spadochrony do rakiety
+def build_paraschute(rocket):
+
+    # definicja spadochronu pilotowego
+    drogue = rocket.add_parachute(
+        name="Drogue",         
+        cd_s=0.26,             # wyznaczony współczynnik oporu
+        trigger="apogee",      # istnieje gotowy wyzwalacz spadochronu na apogeum, można równie dobrze podać tutaj tą funkcję
+        sampling_rate=105,     # częstotliwość próbkowania (tu 105 Hz, typowa wartość dla COTS)
+        lag=1.5,               # opóźnienie pomiędzy sygnałem wyzwolenia spadochronu a pelnym napełnieniem czaszy spadochronuaszy [s]
+        noise=(0, 8.3, 0.5)    # symulacja szumu czujnika
+                            # jak nic nie podać to szum nie zostanie uwzględniony
+                            # wartość ta bierze się z noty katalogowej odpowiedniego czujnika (barometru) z jakiego korzysta rakieta
+    )
+
+
+    # definicja spadochronu głównego
+    main = rocket.add_parachute(
+        name="Main",
+        cd_s=3.75,             # ponownie wyznaczony współczynnik
+        trigger=main_trigger,  # funkcja wyzwalająca spadochron
+        sampling_rate=105,     # cześtotliwośc próbkowania
+        lag=2.0                # główny spadochron otwiera się wolniej, bo jest zwyczajnie większy
+    )
+
+
+from rocketpy import Flight
+
+# funkcja syulująca lot
+def simulate_flight(rocket,env):
+    
+    flight = Flight(rocket=rocket,environment=env,rail_length=RAIL_LENGHT,inclination=INCLINATION,heading=HEADIN,terminate_on_apogee=False)
+
+    return flight
 
 
 

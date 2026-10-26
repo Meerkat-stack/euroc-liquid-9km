@@ -3,8 +3,8 @@ from .inertia import motor_inertia, motor_mass_center, rocket_inertia, rocket_ma
 # NazwaParametru_v od value
 
 ###---enviroment---###
-LATITUDE = 39 + 23/60 + 24.54/3600   # 39°23'24.54"N
-LONGITUDE = 8 + 17+60 + 13.75/3600   # 8°17'13.75"W
+LATITUDE = 39 + 23/60 + 24.53/3600   # 39°23'24.53"N
+LONGITUDE = 8 + 17/60 + 21.23/3600   # 8°17'21.23"W
 ELEVATION = 160                      # [m] AGL
 DATE = (2027,10,25,12)               # przyszłoroczne zwody
 
@@ -54,29 +54,47 @@ DRY_INERTIA_MOTOR = motor_inertia(FUEL_RADIUS,POSITION_OX_TANK,OX_HEIGHT,DRY_MAS
 
 ###---rocket---###
 ROCKET_RADIUS = 0.0900             # zewnętrzny promień rakiety
-PAYLOAD_MASS = 2.0                 # masa ładunku
-ROCKET_MASS = 53.0 + PAYLOAD_MASS  # masa rakiety z ładunkiem
-ROCKET_INERTIA = rocket_inertia()  # moment bezwładności rakiety
-ROCKET_MASS_CENTER = rocket_mass_center()        # środek cięzkości rakiety bez silnika
-ROZKET_DRAG_POWER_OFF = 0.45     # współczynnik oporu powietrza rakiety
-ROZKET_DRAG_POWER_ON = 0.45      # współczynnik oporu powietrza rakiety
+
 
 NOSE_LENGHT = 0.7               # długość noska
 NOSE_KIND = "vonKarman"         # kształt noska
 NOSE_POSITION = 3.5             # położenie noska
 
+PAYLOAD_MASS = 1.4                 # masa ładunku
+NOSE_MASS = 2.0                  # masa głowicy
+BODY_MASS = 37.0                   # masa samej obudowy
+RECOVERY_MASS = 3.0                # masa systemu odzysku
+AVIONICS_MASS = 1.0                # masa awioniki
+ROCKET_MASS =PAYLOAD_MASS+NOSE_MASS+BODY_MASS+RECOVERY_MASS+AVIONICS_MASS  # masa rakiety z ładunkiem
+ROCKET_MASS_CENTER = rocket_mass_center(ROCKET_MASS,NOSE_LENGHT,NOSE_POSITION,NOSE_MASS,RECOVERY_MASS,PAYLOAD_MASS,
+                                        AVIONICS_MASS,BODY_MASS)        # środek cięzkości rakiety bez silnika
+ROCKET_INERTIA = rocket_inertia(ROCKET_MASS,NOSE_LENGHT,NOSE_POSITION,NOSE_MASS,RECOVERY_MASS,PAYLOAD_MASS,AVIONICS_MASS,
+                                BODY_MASS,ROCKET_RADIUS,ROCKET_MASS_CENTER)  # moment bezwładności rakiety
+ROZKET_DRAG_POWER_OFF = 0.45     # współczynnik oporu powietrza rakiety
+ROZKET_DRAG_POWER_ON = 0.45      # współczynnik oporu powietrza rakietyROCKET_MASS_CENTER = rocket_mass_center(ROCKET_MASS,NOSE_LENGHT,NOSE_POSITION,NOSE_MASS,RECOVERY_MASS,PAYLOAD_MASS,AVIONICS_MASS,BODY_MASS)        # środek cięzkości rakiety bez silnika
+
+
 FINS_COUNT = 4                  # liczba stateczników
-FINS_ROOT_CHORD = 0.8           # długość stateczników przy korpusie
-FINS_TIP_CHORD = 0.6            # długość zewnętrzenj krawędzi stateczniów
-FINS_SPAN = 0.2                 # szerokość stateczników
-FINS_SWEEP_LENGHT = 0.15          # przesunięcie stateczników
-FINS_POSITION = 0.8             # położenie stateczinków
+FINS_ROOT_CHORD = 0.35           # długość stateczników przy korpusie
+FINS_TIP_CHORD = 0.12            # długość zewnętrzenj krawędzi stateczniów
+FINS_SPAN = 0.14                 # szerokość stateczników
+FINS_SWEEP_LENGHT = 0.18          # przesunięcie stateczników
+FINS_POSITION = 0.35             # położenie stateczinków
 
 TAIL_TOP_RADIUS = 0.09           # górny promień ogona
-TAIL_BOTTOM_RADIUS = 0.05        # dolny promień ogogna
-TAIL_LENGHT = 0.05               # długość ogona
+TAIL_BOTTOM_RADIUS = 0.08        # dolny promień ogogna
+TAIL_LENGHT = 0.02               # długość ogona
 TAIL_POSTITION = 0.0            # położenie ogona
 
 MOTOR_POSITION = 0.0            # umiejscowienie silnika  w rakiecie
 
+LOWER_BUTTON_POSITION = 1.0     # położenie dolnego zaczepu prowadnicy
+UPPER_BUTTON_POSITION = 2.5     # położenie górnego zaczepu prowadnicy
 
+
+###---simulation---###
+
+RAIL_LENGHT = 12.0              # długość szyny startowej
+INCLINATION = 84                # kąt podczas stortowy
+HEADIN = 148                     # azymut
+TERMINATE_ON_APOGEE = False     # Czy przerwać symulacje w apogeum?
