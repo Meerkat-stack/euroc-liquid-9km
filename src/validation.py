@@ -144,6 +144,8 @@ def validate_flight(flight,motor,inclination,payload_mass,rocket_mass,rail_lengh
 
 def print_requirements(requirements):
 
+    print("EuRoC requirements:\n")
+
     for requiremnt in requirements:
         if(requiremnt.passed):
             print(requiremnt)

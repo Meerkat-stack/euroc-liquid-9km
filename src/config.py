@@ -4,7 +4,7 @@ from .inertia import motor_inertia, motor_mass_center, rocket_inertia, rocket_ma
 
 ###---enviroment---###
 LATITUDE = 39 + 23/60 + 24.53/3600   # 39°23'24.53"N
-LONGITUDE = 8 + 17/60 + 21.23/3600   # 8°17'21.23"W
+LONGITUDE = -(8 + 17/60 + 21.23/3600)   # 8°17'21.23"W
 ELEVATION = 160                      # [m] AGL
 DATE = (2027,10,25,12)               # przyszłoroczne zwody
 
@@ -62,7 +62,7 @@ NOSE_POSITION = 3.5             # położenie noska
 
 PAYLOAD_MASS = 1.4                 # masa ładunku
 NOSE_MASS = 2.0                  # masa głowicy
-BODY_MASS = 37.0                   # masa samej obudowy
+BODY_MASS = 36.0                   # masa samej obudowy
 RECOVERY_MASS = 3.0                # masa systemu odzysku
 AVIONICS_MASS = 1.0                # masa awioniki
 ROCKET_MASS =PAYLOAD_MASS+NOSE_MASS+BODY_MASS+RECOVERY_MASS+AVIONICS_MASS  # masa rakiety z ładunkiem

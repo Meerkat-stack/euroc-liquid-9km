@@ -1,14 +1,26 @@
 from .config import *
-
+import datetime
 
 
 from rocketpy import Environment
 
 # tworzy i zwraca standardową atmosferę bez wiatru
-def create_standard_enviroment():
+def create_standard_enviroment(wind_u):
     env = Environment(latitude=LATITUDE, longitude=LONGITUDE, elevation=ELEVATION)
     env.set_date(DATE) 
-    env.set_atmospheric_model(type="standard_atmosphere", wind_u=0.0, wind_v=0.0)
+    env.set_atmospheric_model(type="standard_atmosphere", wind_u=wind_u, wind_v=0.0)
+    return env
+
+
+def create_tomorrow_enviroment():
+    env = Environment(latitude=LATITUDE,longitude=LONGITUDE,elevation=ELEVATION)
+
+    tomorrow = datetime.date.today() + datetime.timedelta(days=1)
+
+    env.set_date(
+        (tomorrow.year,tomorrow.month,tomorrow.day,12)
+    )
+    env.set_atmospheric_model(type='Forecast', file='GFS')  
     return env
 
 
@@ -81,7 +93,7 @@ def create_motor(fuel_tank,ox_tank):
 from rocketpy import Rocket
 
 
-def create_rocket(liquid_motor):
+def create_rocket(liquid_motor, span=FINS_SPAN, root_chord=FINS_ROOT_CHORD, tip_chord=FINS_TIP_CHORD):
     # definicja suchej masy (bez silnika)
     rocket = Rocket(
         radius=ROCKET_RADIUS,  
@@ -92,11 +104,11 @@ def create_rocket(liquid_motor):
         power_on_drag=ROZKET_DRAG_POWER_ON,     
         coordinate_system_orientation="tail_to_nose" 
     )
-    # powierzchnie areodynamiczne
+
     # głowica
     nose_cone = rocket.add_nose(length=NOSE_LENGHT,kind=NOSE_KIND,position=NOSE_POSITION)
     # stateczniki
-    fins = rocket.add_trapezoidal_fins(n=FINS_COUNT,root_chord=FINS_ROOT_CHORD,tip_chord=FINS_TIP_CHORD,span=FINS_SPAN,sweep_length=FINS_SWEEP_LENGHT,position=FINS_POSITION)
+    fins = rocket.add_trapezoidal_fins(n=FINS_COUNT,root_chord=root_chord,tip_chord=tip_chord,span=span,sweep_length=FINS_SWEEP_LENGHT,position=FINS_POSITION)
     # zwężenie ogonowe (tail)
     tail = rocket.add_tail(top_radius=TAIL_TOP_RADIUS,bottom_radius=TAIL_BOTTOM_RADIUS,length=TAIL_LENGHT,position=TAIL_POSTITION)
     # położenie silnika w rakiecie
@@ -117,7 +129,7 @@ def build_paraschute(rocket):
     # definicja spadochronu pilotowego
     drogue = rocket.add_parachute(
         name="Drogue",         
-        cd_s=0.26,             # wyznaczony współczynnik oporu
+        cd_s=1.56,             # wyznaczony współczynnik oporu
         trigger="apogee",      # istnieje gotowy wyzwalacz spadochronu na apogeum, można równie dobrze podać tutaj tą funkcję
         sampling_rate=105,     # częstotliwość próbkowania (tu 105 Hz, typowa wartość dla COTS)
         lag=1.5,               # opóźnienie pomiędzy sygnałem wyzwolenia spadochronu a pelnym napełnieniem czaszy spadochronuaszy [s]
@@ -130,7 +142,7 @@ def build_paraschute(rocket):
     # definicja spadochronu głównego
     main = rocket.add_parachute(
         name="Main",
-        cd_s=3.75,             # ponownie wyznaczony współczynnik
+        cd_s=13.5,             # ponownie wyznaczony współczynnik
         trigger=main_trigger,  # funkcja wyzwalająca spadochron
         sampling_rate=105,     # cześtotliwośc próbkowania
         lag=2.0                # główny spadochron otwiera się wolniej, bo jest zwyczajnie większy
@@ -140,11 +152,25 @@ def build_paraschute(rocket):
 from rocketpy import Flight
 
 # funkcja syulująca lot
-def simulate_flight(rocket,env):
+def simulate_flight(rocket,env,terminate_on_apogee=TERMINATE_ON_APOGEE):
     
-    flight = Flight(rocket=rocket,environment=env,rail_length=RAIL_LENGHT,inclination=INCLINATION,heading=HEADIN,terminate_on_apogee=False)
+    flight = Flight(rocket=rocket,environment=env,rail_length=RAIL_LENGHT,inclination=INCLINATION,heading=HEADIN,terminate_on_apogee=terminate_on_apogee)
 
     return flight
+
+
+
+def run_rocket(env_func,wind_u,span=FINS_SPAN, root_chord=FINS_ROOT_CHORD, tip_chord=FINS_TIP_CHORD):
+    env = env_func(wind_u)
+    ox_tank = create_ox_tank()
+    fuel_tank = create_fuel_tank()
+    motor = create_motor(fuel_tank=fuel_tank,ox_tank=ox_tank)
+    rocket = create_rocket(liquid_motor=motor,span=FINS_SPAN, root_chord=FINS_ROOT_CHORD, tip_chord=FINS_TIP_CHORD)
+    build_paraschute(rocket)
+    flight=simulate_flight(rocket,env)
+
+    return flight,rocket,motor,fuel_tank,ox_tank,env
+
 
 
 
