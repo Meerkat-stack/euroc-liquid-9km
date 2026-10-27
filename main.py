@@ -1,6 +1,6 @@
 import argparse
 from src.build import *
-from src.report import generate_flight_report
+from src.report import generate_flight_report, generate_nominal_report
 from src.optimalization import optimize_payload_mass
 
 if __name__ == "__main__":
@@ -10,8 +10,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--mode", 
         type=str, 
-        choices=["standard", "optimize-fins", "optimize-mass"], 
-        default="standard",
+        choices=["standard", "optimize-fins", "optimize-mass","nominal"], 
+        default="nominal",
         help="Select execution mode: 'standard' for baseline simulation, 'optimize-fins' for fin geometry optimization."    )
     parser.add_argument("--live", action="store_true", 
                         help="Execute the full optimization loop in real-time. If omitted, the script uses pre-calculated optimal fin dimensions."    
@@ -59,4 +59,8 @@ if __name__ == "__main__":
     elif args.mode == "optimize-mass":
 
         optimize_payload_mass()
-            
+
+    elif args.mode == "nominal":
+
+        flight,rocket,motor,fuel_tank,ox_tank,env = run_rocket(create_tomorrow_enviroment)
+        generate_nominal_report(flight, rocket, motor, env)

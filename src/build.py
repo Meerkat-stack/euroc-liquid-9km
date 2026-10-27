@@ -12,7 +12,7 @@ def create_standard_enviroment(wind_u):
     return env
 
 
-def create_tomorrow_enviroment():
+def create_tomorrow_enviroment(wind_u):
     env = Environment(latitude=LATITUDE,longitude=LONGITUDE,elevation=ELEVATION)
 
     tomorrow = datetime.date.today() + datetime.timedelta(days=1)
@@ -168,7 +168,7 @@ def simulate_flight(rocket,env,terminate_on_apogee=TERMINATE_ON_APOGEE):
 
 
 
-def run_rocket(env_func,wind_u,span=FINS_SPAN, root_chord=FINS_ROOT_CHORD, tip_chord=FINS_TIP_CHORD):
+def run_rocket(env_func,wind_u=0,span=FINS_SPAN, root_chord=FINS_ROOT_CHORD, tip_chord=FINS_TIP_CHORD):
     env = env_func(wind_u)
     ox_tank = create_ox_tank()
     fuel_tank = create_fuel_tank()

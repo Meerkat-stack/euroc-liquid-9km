@@ -60,7 +60,8 @@ NOSE_LENGHT = 0.7               # długość noska
 NOSE_KIND = "vonKarman"         # kształt noska
 NOSE_POSITION = 3.5             # położenie noska
 
-PAYLOAD_MASS = 1.5                 # masa ładunku
+BEST_PAYLOAD_MASS = 2.20        # największa dopuszczalna masa ładunku
+PAYLOAD_MASS = 1.5               # masa ładunku
 NOSE_MASS = 2.0                  # masa głowicy
 BODY_MASS = 36.0                   # masa samej obudowy
 RECOVERY_MASS = 3.0                # masa systemu odzysku
