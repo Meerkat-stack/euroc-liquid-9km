@@ -60,7 +60,7 @@ NOSE_LENGHT = 0.7               # długość noska
 NOSE_KIND = "vonKarman"         # kształt noska
 NOSE_POSITION = 3.5             # położenie noska
 
-PAYLOAD_MASS = 1.4                 # masa ładunku
+PAYLOAD_MASS = 1.5                 # masa ładunku
 NOSE_MASS = 2.0                  # masa głowicy
 BODY_MASS = 36.0                   # masa samej obudowy
 RECOVERY_MASS = 3.0                # masa systemu odzysku
@@ -75,8 +75,8 @@ ROZKET_DRAG_POWER_ON = 0.45      # współczynnik oporu powietrza rakietyROCKET_
 
 
 FINS_COUNT = 4                  # liczba stateczników
-FINS_ROOT_CHORD = 0.35           # długość stateczników przy korpusie
-FINS_TIP_CHORD = 0.12            # długość zewnętrzenj krawędzi stateczniów
+FINS_ROOT_CHORD = 0.312500      # długość stateczników przy korpusie
+FINS_TIP_CHORD = 0.044999       # długość zewnętrzenj krawędzi stateczniów
 FINS_SPAN = 0.14                 # szerokość stateczników
 FINS_SWEEP_LENGHT = 0.18          # przesunięcie stateczników
 FINS_POSITION = 0.35             # położenie stateczinków

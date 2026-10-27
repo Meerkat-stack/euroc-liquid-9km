@@ -12,7 +12,7 @@ class ValidationResult:
 
 
 # funkcja sprawdzająca zgodność parametrów z wymogami, zwraca tablice obiektów klasy ValidationResult
-def validate_flight(flight,motor,inclination,payload_mass,rocket_mass,rail_lenght,g0):
+def validate_flight(flight,motor,inclination,payload_mass,rocket_mass,rail_lenght,g0=9.81):
 
     results = []
 
@@ -152,3 +152,10 @@ def print_requirements(requirements):
         else:    
             print("\033[31m",requiremnt,"\033[0m")
 
+def requirements_passed(requirements):
+    if requirements == None: 
+        return False
+    for requirement in requirements:
+        if(requirement.passed == False):
+            return False
+    return True

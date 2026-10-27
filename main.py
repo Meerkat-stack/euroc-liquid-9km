@@ -1,8 +1,7 @@
 import argparse
 from src.build import *
-from src.validation import validate_flight, ValidationResult, print_requirements
 from src.report import generate_flight_report
-
+from src.optimalization import optimize_payload_mass
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="EuRoC L9 rocket simulation.")
@@ -11,9 +10,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "--mode", 
         type=str, 
-        choices=["standard", "optimize-fins", "historical"], 
+        choices=["standard", "optimize-fins", "optimize-mass"], 
         default="standard",
-        help="Select execution mode: 'standard' for baseline simulation, 'optimize-fins' for fin geometry optimization, or 'historical' for past data analysis."    )
+        help="Select execution mode: 'standard' for baseline simulation, 'optimize-fins' for fin geometry optimization."    )
     parser.add_argument("--live", action="store_true", 
                         help="Execute the full optimization loop in real-time. If omitted, the script uses pre-calculated optimal fin dimensions."    
                         )
@@ -23,7 +22,7 @@ if __name__ == "__main__":
     # Logika wyboru na podstawie przekazanego argumentu
     if args.mode == "standard":
 
-        flight,rocket,motor,fuel_tank,ox_tank,env = run_rocket(create_standard_enviroment,0)
+        flight,rocket,motor,fuel_tank,ox_tank,env = run_rocket(create_standard_enviroment,wind_u=0)
         generate_flight_report(flight,rocket,motor,env)        
 
 
@@ -31,7 +30,7 @@ if __name__ == "__main__":
 
         from src.optimalization import optimize_fins    
 
-        env = create_standard_enviroment(wind_u=9.0) # Profil worst-case
+        env = create_standard_enviroment(wind_u=9.0) # profil worst-case
         ox_tank = create_ox_tank()
         fuel_tank = create_fuel_tank()
         motor = create_motor(fuel_tank, ox_tank)
@@ -54,4 +53,10 @@ if __name__ == "__main__":
             root_chord = 0.312500
 
         flight,rocket,motor,fuel_tank,ox_tank,env = run_rocket(create_standard_enviroment,0,span,root_chord,tip_chord)
-        generate_flight_report(flight,rocket,motor,env)        
+        generate_flight_report(flight,rocket,motor,env)    
+
+
+    elif args.mode == "optimize-mass":
+
+        optimize_payload_mass()
+            

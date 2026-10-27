@@ -1,6 +1,11 @@
 import numpy as np
 from dataclasses import dataclass
 from .build import *
+# import config as config
+from . import config
+from .validation import print_requirements, validate_flight, requirements_passed
+from .report import generate_flight_report
+
 
 @dataclass
 class OptimizationResult:
@@ -96,5 +101,47 @@ def optimize_fins(env,motor):
     best_result = optimize_fins_loop(spans,root_chords,tip_chords,motor,env)
 
     return best_result
+
+
+def optimize_payload_mass():
+
+
+    last_valid_payload = 0.0
+
+
+    env = create_standard_enviroment(wind_u=0.0) # profil worst-case
+    ox_tank = create_ox_tank()
+    fuel_tank = create_fuel_tank()
+    motor = create_motor(fuel_tank, ox_tank)
+
+
+
+    for current_payload_mass in np.arange(1.4,10,0.1):
+
+        print(current_payload_mass)
+        
+        rocket = create_rocket(motor,payload_mass=current_payload_mass)
+        build_paraschute(rocket)
+        flight = simulate_flight(rocket, env, terminate_on_apogee=False) 
+
+        requirements = validate_flight(flight,motor,config.INCLINATION,current_payload_mass,rocket.mass,config.RAIL_LENGHT,9.81)
+
+        ascent_requirements = []
+        for requiremnt in requirements:
+            if (requiremnt.rule in ["EuRoC-LV-RQT-1030","EuRoC-LV-RQT-1020","EuRoC-LV-RQT-1100","EuRoC-LV-RQT-0860","L9"]) == True:
+                ascent_requirements.append(requiremnt)
+
+        if requirements_passed(ascent_requirements):
+            last_valid_payload = current_payload_mass
+            last_ok_requirements = requirements
+            last_rocket = rocket
+            last_flight = flight
+        else:
+            break
+
+    print("Best: ",last_valid_payload," kg")
+    print_requirements(last_ok_requirements) 
+
+    generate_flight_report(last_flight, last_rocket, motor, env)           
 
 

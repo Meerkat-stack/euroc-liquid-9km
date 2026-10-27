@@ -1,6 +1,6 @@
 from .config import *
 import datetime
-
+from .inertia import rocket_inertia, rocket_mass_center
 
 from rocketpy import Environment
 
@@ -93,7 +93,14 @@ def create_motor(fuel_tank,ox_tank):
 from rocketpy import Rocket
 
 
-def create_rocket(liquid_motor, span=FINS_SPAN, root_chord=FINS_ROOT_CHORD, tip_chord=FINS_TIP_CHORD):
+def create_rocket(liquid_motor, span=FINS_SPAN, root_chord=FINS_ROOT_CHORD, tip_chord=FINS_TIP_CHORD,payload_mass=PAYLOAD_MASS):
+    
+    ROCKET_MASS =payload_mass+NOSE_MASS+BODY_MASS+RECOVERY_MASS+AVIONICS_MASS  # masa rakiety z ładunkiem
+    ROCKET_MASS_CENTER = rocket_mass_center(ROCKET_MASS,NOSE_LENGHT,NOSE_POSITION,NOSE_MASS,RECOVERY_MASS,payload_mass,
+                                            AVIONICS_MASS,BODY_MASS)        # środek cięzkości rakiety bez silnika
+    ROCKET_INERTIA = rocket_inertia(ROCKET_MASS,NOSE_LENGHT,NOSE_POSITION,NOSE_MASS,RECOVERY_MASS,payload_mass,AVIONICS_MASS,
+                                    BODY_MASS,ROCKET_RADIUS,ROCKET_MASS_CENTER)  # moment bezwładności rakiety
+
     # definicja suchej masy (bez silnika)
     rocket = Rocket(
         radius=ROCKET_RADIUS,  
@@ -104,6 +111,7 @@ def create_rocket(liquid_motor, span=FINS_SPAN, root_chord=FINS_ROOT_CHORD, tip_
         power_on_drag=ROZKET_DRAG_POWER_ON,     
         coordinate_system_orientation="tail_to_nose" 
     )
+    
 
     # głowica
     nose_cone = rocket.add_nose(length=NOSE_LENGHT,kind=NOSE_KIND,position=NOSE_POSITION)
